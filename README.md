@@ -13,7 +13,7 @@ $ python setup.py install
 ```
 $ echo '#requirements.in' > requirements.in
 
-$ pir flask pytest
+$ pir install flask pytest
 ...
 Successfully installed Jinja2-2.8 MarkupSafe-0.23 Werkzeug-0.11.1 flask-0.10.1 itsdangerous-0.24 py-1.4.30 pytest-2.8.2
 Append the following packages in requirements.in: flask, pytest
