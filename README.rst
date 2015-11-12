@@ -2,14 +2,14 @@ pip-require
 ===========
 
 Depending on the installation or uninstall packages, and then edit the
-requirements file .
+requirements file.
 
 Install
 -------
 
 ::
 
-    $ pip install pir
+    $ python setup.py install
 
 Example
 -------

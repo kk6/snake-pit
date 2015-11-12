@@ -5,7 +5,7 @@ Depending on the installation or uninstall packages, and then edit the requireme
 ## Install
 
 ```
-$ pip install pir
+$ python setup.py install
 ```
 
 ## Example
