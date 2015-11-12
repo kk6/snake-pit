@@ -2,6 +2,8 @@
 import pip
 import click
 
+__version__ = '0.1.0'
+
 
 @click.command()
 @click.argument('packages', nargs=-1)

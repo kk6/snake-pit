@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
+import re
+import ast
+
 from setuptools import setup, find_packages
+
+
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
+
+
+with open('pir/__init__.py', 'rb') as f:
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
+
 
 try:
     long_description = open("README.rst").read()
@@ -8,7 +20,7 @@ except IOError:
 
 setup(
     name="pip-require",
-    version="0.1.0",
+    version=version,
     description=(
         "Depending on the installation or uninstall packages, "
         "and then edit the requirements file."
