@@ -63,7 +63,7 @@ def install(packages, requirement):
 @cli.command()
 @click.argument('packages', nargs=-1)
 @click.option('--requirement', '-r', default='requirements.in',
-              type=click.File('r+'),
+              type=click.File('r'),
               help="Remove package names from the given requirement file.")
 @click.confirmation_option(help="Are you sure you want to uninstall these packages?")
 def uninstall(packages, requirement):
