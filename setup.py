@@ -44,6 +44,6 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        pir = pir:main
+        pir = pir:cli
     """
 )

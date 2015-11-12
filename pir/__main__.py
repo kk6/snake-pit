@@ -3,4 +3,4 @@ import sys
 import pir
 
 if __name__ == '__main__':
-    sys.exit(pir.main())
+    sys.exit(pir.cli())

@@ -2,17 +2,21 @@
 import pip
 import click
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
-@click.command()
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
 @click.argument('packages', nargs=-1)
 @click.option('--requirement', '-r', default='requirements.in',
               type=click.File('a'),
               help="Append package names to the given requirement file.")
-def main(packages, requirement):
-    """
-    Main
+def install(packages, requirement):
+    """Install and write requirements file.
 
     To append package names were installed in requirements file,
     if the 'pip install' was successful.
@@ -39,5 +43,5 @@ def main(packages, requirement):
 
 
 if __name__ == '__main__':
-    main()
+    cli()
 
