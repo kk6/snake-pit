@@ -4,6 +4,8 @@ import re
 import pip
 import click
 
+from . import echoes
+
 __version__ = '0.1.2'
 
 
@@ -47,7 +49,7 @@ def install(packages, requirement):
         "(see 'pir --help')"
     )
     if not packages:
-        click.echo(click.style(msg, fg='yellow'))
+        echoes.warn(msg)
         return
 
     raised = pip.main(["install"] + [pkg for pkg in packages])
@@ -56,8 +58,8 @@ def install(packages, requirement):
 
     requirement.write('\n'.join(packages) + '\n')
     msg = "Append the following packages in {requirement}: {packages}"
-    click.echo(msg.format(requirement=requirement.name,
-                          packages=", ".join(packages)))
+    echoes.info(msg.format(requirement=requirement.name,
+                           packages=", ".join(packages)))
 
 
 @cli.command()
@@ -80,7 +82,7 @@ def uninstall(packages, requirement):
         "(see 'pir --help')"
     )
     if not packages:
-        click.echo(click.style(msg, fg='red'))
+        echoes.err(msg)
         return
 
     raised = pip.main(["uninstall"] + ['-y'] + [pkg for pkg in packages])
@@ -102,6 +104,9 @@ def uninstall(packages, requirement):
         output += '\n'
     with open(requirement.name, 'w') as f:
         f.write(content)
+    msg = "Remove the following packages from {requirement}: {packages}"
+    echoes.info(msg.format(requirement=requirement.name,
+                           packages=", ".join(packages)))
 
 
 if __name__ == '__main__':
