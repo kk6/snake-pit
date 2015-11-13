@@ -5,6 +5,7 @@ import pip
 import click
 
 from . import echoes
+from .utils import classify_installed_or_not
 
 
 class AliasedGroup(click.Group):
@@ -50,14 +51,23 @@ def install(packages, requirement):
         echoes.warn(msg)
         return
 
-    raised = pip.main(["install"] + [pkg for pkg in packages])
+    will_install, need_upgrade = classify_installed_or_not(packages)
+
+    echoes.info(
+        "Following packages installed. "
+        "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
+
+    if not will_install:
+        return
+
+    raised = pip.main(["install"] + [pkg for pkg in will_install])
     if raised:
         return
 
     requirement.write('\n'.join(packages) + '\n')
     msg = "Append the following packages in {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
-                           packages=", ".join(packages)))
+                           packages=", ".join(will_install)))
 
 
 @cli.command()
@@ -83,9 +93,16 @@ def uninstall(packages, requirement):
         echoes.err(msg)
         return
 
-    raised = pip.main(["uninstall"] + ['-y'] + [pkg for pkg in packages])
-    if raised:
-        return
+    uninstalled_packages = []
+    for pkg in packages:
+        if pkg in uninstalled_packages:
+            # Already installed
+            continue
+        if pip.main(["uninstall"] + ['-y'] + [pkg]):
+            # Uninstall failed.
+            continue
+        else:
+            uninstalled_packages.append(pkg)
 
     output = []
     pattern = re.compile('^[\w0-9\-.]+')
@@ -104,7 +121,7 @@ def uninstall(packages, requirement):
         f.write(content)
     msg = "Remove the following packages from {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
-                           packages=", ".join(packages)))
+                           packages=", ".join(uninstalled_packages)))
 
 
 if __name__ == '__main__':
