@@ -6,8 +6,8 @@ pip-require
 Depending on the installation or uninstall packages, and then edit the
 requirements file.
 
-Install
--------
+Install pip-require
+-------------------
 
 ::
 
