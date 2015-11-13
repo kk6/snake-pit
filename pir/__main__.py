@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-import pir
+from pir import cli
 
 if __name__ == '__main__':
-    sys.exit(pir.cli())
+    sys.exit(cli.cli())
