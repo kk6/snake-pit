@@ -1,4 +1,7 @@
 click==5.1
+pluggy==0.3.1
 py==1.4.30
 pytest==2.8.2
+tox==2.2.1
+virtualenv==13.1.2
 wheel==0.26.0
