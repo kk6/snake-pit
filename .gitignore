@@ -56,5 +56,8 @@ docs/_build/
 # PyBuilder
 target/
 
+# Wheel
+wheelhouse/
+
 # Project Repository
 requirements.in
