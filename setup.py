@@ -29,7 +29,7 @@ setup(
     author="kk6",
     author_email="hiro.ashiya@gmail.com",
     url="https://github.com/kk6/pip-require",
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests*']),
     install_requires=[
         "Click",
     ],
