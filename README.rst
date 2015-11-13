@@ -1,17 +1,17 @@
-pip-require
-===========
+pip-requirements
+================
 
 |CircleCI| |Requires.io|
 
 Depending on the installation or uninstall packages, and then edit the
 requirements file.
 
-Install pip-require
--------------------
+Install pip-requirements
+------------------------
 
 ::
 
-    $ python setup.py install
+    $ pip install pip-requirements
 
 Usage
 -----
@@ -76,7 +76,7 @@ License
 
 MIT
 
-.. |CircleCI| image:: https://img.shields.io/circleci/project/kk6/pip-require.svg?style=flat-square
-   :target: https://circleci.com/gh/kk6/pip-require
-.. |Requires.io| image:: https://img.shields.io/requires/github/kk6/pip-require.svg?style=flat-square
-   :target: https://requires.io/github/kk6/pip-require/requirements/
+.. |CircleCI| image:: https://img.shields.io/circleci/project/kk6/pip-requirements.svg?style=flat-square
+   :target: https://circleci.com/gh/kk6/pip-requirements
+.. |Requires.io| image:: https://img.shields.io/requires/github/kk6/pip-requirements.svg?style=flat-square
+   :target: https://requires.io/github/kk6/pip-requirements/requirements/

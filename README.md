@@ -1,13 +1,13 @@
-# pip-require
-[![CircleCI](https://img.shields.io/circleci/project/kk6/pip-require.svg?style=flat-square)](https://circleci.com/gh/kk6/pip-require)
-[![Requires.io](https://img.shields.io/requires/github/kk6/pip-require.svg?style=flat-square)](https://requires.io/github/kk6/pip-require/requirements/)
+# pip-requirements
+[![CircleCI](https://img.shields.io/circleci/project/kk6/pip-requirements.svg?style=flat-square)](https://circleci.com/gh/kk6/pip-requirements)
+[![Requires.io](https://img.shields.io/requires/github/kk6/pip-requirements.svg?style=flat-square)](https://requires.io/github/kk6/pip-requirements/requirements/)
 
 Depending on the installation or uninstall packages, and then edit the requirements file.
 
-## Install pip-require
+## Install pip-requirements
 
 ```
-$ python setup.py install
+$ pip install pip-requirements
 ```
 
 ## Usage

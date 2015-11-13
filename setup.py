@@ -19,7 +19,7 @@ except IOError:
     long_description = ""
 
 setup(
-    name="pip-require",
+    name="pip-requirements",
     version=version,
     description=(
         "Depending on the installation or uninstall packages, "
