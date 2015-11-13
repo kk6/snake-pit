@@ -1,6 +1,8 @@
 pip-require
 ===========
 
+|CircleCI| |Requires.io|
+
 Depending on the installation or uninstall packages, and then edit the
 requirements file.
 
@@ -11,14 +13,17 @@ Install
 
     $ python setup.py install
 
-Example
--------
+Usage
+-----
+
+install
+~~~~~~~
 
 ::
 
     $ echo '#requirements.in' > requirements.in
 
-    $ pir flask pytest
+    $ pir install flask pytest
     ...
     Successfully installed Jinja2-2.8 MarkupSafe-0.23 Werkzeug-0.11.1 flask-0.10.1 itsdangerous-0.24 py-1.4.30 pytest-2.8.2
     Append the following packages in requirements.in: flask, pytest
@@ -27,6 +32,34 @@ Example
     #requirements.in
     flask
     pytest
+
+uninstall
+~~~~~~~~~
+
+::
+
+    $ cat requirements.in
+    #requirements.in
+    requests
+    nose
+
+    $ pir uninstall nose
+    Do you want to continue? [y/N]: y
+    Uninstalling nose-1.3.7:
+      Successfully uninstalled nose-1.3.7
+    Remove the following packages from requirements.in: nose
+
+    $ cat requirements.in
+    #requirements.in
+    requests
+
+Aliases
+-------
+
+::
+
+    $ pir i django  # install django
+    $ pir u django  # uninstall django
 
 Develop
 -------
@@ -42,3 +75,8 @@ License
 -------
 
 MIT
+
+.. |CircleCI| image:: https://img.shields.io/circleci/project/kk6/pip-require.svg?style=flat-square
+   :target: https://circleci.com/gh/kk6/pip-require
+.. |Requires.io| image:: https://img.shields.io/requires/github/kk6/pip-require.svg?style=flat-square
+   :target: https://requires.io/github/kk6/pip-require/requirements/
