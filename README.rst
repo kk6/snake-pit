@@ -78,9 +78,9 @@ MIT
 
 .. |CircleCI| image:: https://img.shields.io/circleci/project/kk6/pip-requirements.svg?style=flat-square
    :target: https://circleci.com/gh/kk6/pip-requirements
-.. |Coverage Status| image:: https://img.shields.io/coveralls/kk6/pip-requirements.svg
+.. |Coverage Status| image:: https://img.shields.io/coveralls/kk6/pip-requirements.svg?style=flat-square
    :target: https://coveralls.io/github/kk6/pip-requirements?branch=master
 .. |Requires.io| image:: https://img.shields.io/requires/github/kk6/pip-requirements.svg?style=flat-square
    :target: https://requires.io/github/kk6/pip-requirements/requirements/
-.. |Code Climate| image:: https://img.shields.io/codeclimate/github/kk6/pip-requirements/badges/gpa.svg
+.. |Code Climate| image:: https://img.shields.io/codeclimate/github/kk6/pip-requirements/badges/gpa.svg?style=flat-square
    :target: https://codeclimate.com/github/kk6/pip-requirements

@@ -1,8 +1,8 @@
 # pip-requirements
 [![CircleCI](https://img.shields.io/circleci/project/kk6/pip-requirements.svg?style=flat-square)](https://circleci.com/gh/kk6/pip-requirements)
-[![Coverage Status](https://img.shields.io/coveralls/kk6/pip-requirements.svg)](https://coveralls.io/github/kk6/pip-requirements?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/kk6/pip-requirements.svg?style=flat-square)](https://coveralls.io/github/kk6/pip-requirements?branch=master)
 [![Requires.io](https://img.shields.io/requires/github/kk6/pip-requirements.svg?style=flat-square)](https://requires.io/github/kk6/pip-requirements/requirements/)
-[![Code Climate](https://img.shields.io/codeclimate/github/kk6/pip-requirements/badges/gpa.svg)](https://codeclimate.com/github/kk6/pip-requirements)
+[![Code Climate](https://img.shields.io/codeclimate/github/kk6/pip-requirements/badges/gpa.svg?style=flat-square)](https://codeclimate.com/github/kk6/pip-requirements)
 
 Depending on the installation or uninstall packages, and then edit the requirements file.
 
