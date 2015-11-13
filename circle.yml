@@ -1,11 +1,16 @@
 machine:
   python:
     version: 3.5.0
+  environment:
+    TOX_PY27 = 2.7.10
+    TOX_PY35 = 3.5.0
 
 dependencies:
   pre:
     - pip install tox --upgrade
     - pip install --upgrade setuptools
+    - pyenv local $TOX_PY27 $TOX_PY35
+
 test:
   override:
     - tox
