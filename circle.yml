@@ -9,8 +9,11 @@ dependencies:
   pre:
     - pip install tox --upgrade
     - pip install --upgrade setuptools
+    - pip install coveralls
     - pyenv local $TOX_PY27 $TOX_PY35
 
 test:
   override:
     - tox
+  post:
+    - coveralls
