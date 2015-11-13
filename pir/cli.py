@@ -93,9 +93,16 @@ def uninstall(packages, requirement):
         echoes.err(msg)
         return
 
-    raised = pip.main(["uninstall"] + ['-y'] + [pkg for pkg in packages])
-    if raised:
-        return
+    uninstalled_packages = []
+    for pkg in packages:
+        if pkg in uninstalled_packages:
+            # Already installed
+            continue
+        if pip.main(["uninstall"] + ['-y'] + [pkg]):
+            # Uninstall failed.
+            continue
+        else:
+            uninstalled_packages.append(pkg)
 
     output = []
     pattern = re.compile('^[\w0-9\-.]+')
@@ -114,7 +121,7 @@ def uninstall(packages, requirement):
         f.write(content)
     msg = "Remove the following packages from {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
-                           packages=", ".join(packages)))
+                           packages=", ".join(uninstalled_packages)))
 
 
 if __name__ == '__main__':
