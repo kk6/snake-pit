@@ -1,0 +1,11 @@
+machine:
+  python:
+    version: 3.5.0
+
+dependencies:
+  pre:
+    - pip install tox --upgrade
+    - pip install --upgrade setuptools
+test:
+  override:
+    - tox
