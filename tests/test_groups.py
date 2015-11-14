@@ -8,6 +8,7 @@ import pytest
     ('uninstall', "I'm uninstall"),
     ('un', "I'm uninstall"),
     ('u', "Too many matches: uninstall, update"),
+    ('XXX', 'No such command'),
 ])
 def test_aliased_group(cmd, expected_output):
     import click
