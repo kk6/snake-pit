@@ -1,6 +1,6 @@
 [run]
 omit =
-    pir/__main__.py
+    pit/__main__.py
 
 [report]
 exclude_lines =

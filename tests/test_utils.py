@@ -8,16 +8,16 @@ import pytest
 def test_classify_installed_or_not(monkeypatch, packages, expected):
     def mockreturn():
         return {'pkg2'}
-    from pir import utils
+    from pit import utils
     monkeypatch.setattr(utils, 'get_installed_package_set', mockreturn)
-    from pir.utils import classify_installed_or_not
+    from pit.utils import classify_installed_or_not
 
     rv = classify_installed_or_not(packages)
     assert rv == expected
 
 
 def test_re_edit_requirements():
-    from pir.utils import re_edit_requirements
+    from pit.utils import re_edit_requirements
     before = [
         "# requirements.in\n",
         "flask\n",

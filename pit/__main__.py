@@ -2,7 +2,7 @@
 """
 The main entry point.
 
-Invoke as `pir' or `python -m pir'.
+Invoke as `pit' or `python -m pit'.
 """
 import sys
 from .cli import cli

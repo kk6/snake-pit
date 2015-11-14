@@ -31,7 +31,7 @@ def install(packages, requirement):
     """
     if not packages:
         echoes.warn("You must give at least one requirement to install"
-                    "(see 'pir --help')")
+                    "(see 'pit --help')")
         return
 
     will_install, need_upgrade = classify_installed_or_not(packages)
@@ -72,7 +72,7 @@ def uninstall(packages, requirement):
     """
     msg = (
         "You must give at least one requirement to uninstall"
-        "(see 'pir --help')"
+        "(see 'pit --help')"
     )
     if not packages:
         echoes.err(msg)

@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
 
-with open('pir/__init__.py', 'rb') as f:
+with open('pit/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
@@ -19,7 +19,7 @@ except IOError:
     long_description = ""
 
 setup(
-    name="pip-requirements",
+    name="snake-pit",
     version=version,
     description=(
         "Depending on the installation or uninstall packages, "
@@ -48,6 +48,6 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        pir = pir.__main__:cli
+        pit = pit.__main__:cli
     """
 )

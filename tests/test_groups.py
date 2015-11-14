@@ -13,11 +13,11 @@ import pytest
 def test_aliased_group(cmd, expected_output):
     import click
     from click.testing import CliRunner
-    from pir.groups import AliasedGroup
+    from pit.groups import AliasedGroup
 
     @click.group(cls=AliasedGroup)
     def pir():
-        click.echo("I'm pir")
+        click.echo("I'm pit")
 
     @pir.command()
     def install():

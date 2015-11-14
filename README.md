@@ -9,7 +9,7 @@ Depending on the installation or uninstall packages, and then edit the requireme
 ## Install pip-requirements
 
 ```
-$ pip install pip-requirements
+$ pip install snake-pit
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ $ pip install pip-requirements
 ```
 $ echo '#requirements.in' > requirements.in
 
-$ pir install flask pytest
+$ pit install flask pytest
 ...
 Successfully installed Jinja2-2.8 MarkupSafe-0.23 Werkzeug-0.11.1 flask-0.10.1 itsdangerous-0.24 py-1.4.30 pytest-2.8.2
 Append the following packages in requirements.in: flask, pytest
@@ -38,7 +38,7 @@ $ cat requirements.in
 requests
 nose
 
-$ pir uninstall nose
+$ pit uninstall nose
 Do you want to continue? [y/N]: y
 Uninstalling nose-1.3.7:
   Successfully uninstalled nose-1.3.7
@@ -52,8 +52,8 @@ requests
 ## Aliases
 
 ```
-$ pir i django  # install django
-$ pir u django  # uninstall django
+$ pit i django  # install django
+$ pit u django  # uninstall django
 ```
 
 ## Develop
