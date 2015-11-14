@@ -7,10 +7,23 @@ import pip
 
 
 def get_installed_package_set():
+    """Returns installed packages
+
+    :return: Installed packages.
+    :rtype: set
+
+    """
     return {p.key for p in pip.get_installed_distributions()}
 
 
 def classify_installed_or_not(packages):
+    """Classify packages installed or not
+
+    :param packages: Passed packages by user.
+    :return: Install candidates and installed packages.
+    :rtype: tuple
+
+    """
     installed = get_installed_package_set()
     will_install = set(packages) - installed
     need_upgrade = set(packages) & installed
@@ -18,12 +31,13 @@ def classify_installed_or_not(packages):
 
 
 def re_edit_requirements(lines, will_remove):
-    """
-    Re-Edit requirements file
+    """Re-Edit requirements file
 
     :param lines: requirement.readlines()'s return value.
     :param will_remove: Will be removed packages.
     :return: The contents of the file after re-editing.
+    :rtype: str
+
     """
     pattern = re.compile('^[\w0-9\-.]+')
     re_editing = []

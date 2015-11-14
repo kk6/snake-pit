@@ -29,21 +29,20 @@ def install(packages, requirement):
     :param packages: Install packages.
     :param requirement: Output destination of package names.
     """
-    msg = (
-        "You must give at least one requirement to install"
-        "(see 'pir --help')"
-    )
     if not packages:
-        echoes.warn(msg)
+        echoes.warn("You must give at least one requirement to install"
+                    "(see 'pir --help')")
         return
 
     will_install, need_upgrade = classify_installed_or_not(packages)
 
-    echoes.info(
-        "Following packages installed. "
-        "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
+    if need_upgrade:
+        echoes.info(
+            "Following packages installed. "
+            "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
 
     if not will_install:
+        echoes.warn("There is no installable packages a new.")
         return
 
     raised = pip.main(["install"] + [pkg for pkg in will_install])
