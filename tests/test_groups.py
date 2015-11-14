@@ -16,21 +16,21 @@ def test_aliased_group(cmd, expected_output):
     from pit.groups import AliasedGroup
 
     @click.group(cls=AliasedGroup)
-    def pir():
+    def pit():
         click.echo("I'm pit")
 
-    @pir.command()
+    @pit.command()
     def install():
         click.echo("I'm install")
 
-    @pir.command()
+    @pit.command()
     def uninstall():
         click.echo("I'm uninstall")
 
-    @pir.command()
+    @pit.command()
     def update():
         click.echo("I'm update")
 
     runner = CliRunner()
-    result = runner.invoke(pir, [cmd])
+    result = runner.invoke(pit, [cmd])
     assert expected_output in result.output
