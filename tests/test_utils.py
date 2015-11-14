@@ -14,3 +14,19 @@ def test_classify_installed_or_not(monkeypatch, packages, expected):
 
     rv = classify_installed_or_not(packages)
     assert rv == expected
+
+
+def test_re_edit_requirements():
+    from pir.utils import re_edit_requirements
+    before = [
+        "# requirements.in\n",
+        "flask\n",
+        "pytest\n",
+        "\n",
+    ]
+    after = """# requirements.in
+pytest
+
+"""
+    content = re_edit_requirements(before, ['flask'])
+    assert content == after

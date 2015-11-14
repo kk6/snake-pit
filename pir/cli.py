@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import re
-
 import pip
 import click
 
 from . import echoes
 from .groups import AliasedGroup
-from .utils import classify_installed_or_not
+from .utils import classify_installed_or_not, re_edit_requirements
 
 
 @click.group(cls=AliasedGroup)
@@ -92,19 +90,7 @@ def uninstall(packages, requirement):
         else:
             uninstalled_packages.append(pkg)
 
-    output = []
-    pattern = re.compile('^[\w0-9\-.]+')
-    for line in requirement.readlines():
-        match_obj = pattern.match(line)
-        if match_obj:
-            matched_pkg = match_obj.group().lower()
-            if matched_pkg not in packages:
-                output.append(line)
-        else:
-            output.append(line)
-    content = '\n'.join(output)
-    if output[-1] != '\n':
-        output += '\n'
+    content = re_edit_requirements(requirement.readlines(), packages)
     with open(requirement.name, 'w') as f:
         f.write(content)
     msg = "Remove the following packages from {requirement}: {packages}"
