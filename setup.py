@@ -28,7 +28,7 @@ setup(
     license="MIT",
     author="kk6",
     author_email="hiro.ashiya@gmail.com",
-    url="https://github.com/kk6/pip-requirements",
+    url="https://github.com/kk6/snake-pit",
     packages=find_packages(exclude=['tests*']),
     install_requires=[
         "Click",

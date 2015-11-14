@@ -5,6 +5,7 @@
 [![Code Climate](https://img.shields.io/codeclimate/github/kk6/snake-pit/badges/gpa.svg?style=flat-square)](https://codeclimate.com/github/kk6/snake-pit)
 [![Code Health](https://landscape.io/github/kk6/snake-pit/master/landscape.svg?style=flat-square)](https://landscape.io/github/kk6/snake-pit/master)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/kk6/snake-pit/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/snake-pit.svg?style=flat-square)](https://pypi.python.org/pypi/snake-pit)
 
 Depending on the installation or uninstall packages, and then edit the requirements file.
 
