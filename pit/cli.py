@@ -29,7 +29,8 @@ def cli():
     '--requirement', '-r', default='requirements.in', type=click.File('a'),
     help="Append package names to the given requirement file."
 )
-def install(packages, requirement):
+@click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
+def install(packages, requirement, quiet):
     """Install packages and write requirements file.
 
     To append package names were installed in requirements file,
@@ -63,6 +64,12 @@ def install(packages, requirement):
     msg = "Append the following packages in {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
                            packages=", ".join(will_install)))
+    if quiet:
+        return
+    requirement.seek(0)
+    with open(requirement.name, 'r') as f:
+        echoes.info("{} has been updated as follows:".format(requirement.name))
+        echoes.success(f.read())
 
 
 @cli.command()
@@ -71,8 +78,9 @@ def install(packages, requirement):
     '--requirement', '-r', default='requirements.in', type=click.File('r'),
     help="Remove package names from the given requirement file."
 )
+@click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
 @click.confirmation_option(help="Are you sure you want to uninstall these packages?")
-def uninstall(packages, requirement):
+def uninstall(packages, requirement, quiet):
     """Uninstall packages and remove from requirements file.
 
     To Remove uninstalled packages from requirements file,
@@ -112,3 +120,9 @@ def uninstall(packages, requirement):
     msg = "Remove the following packages from {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
                            packages=", ".join(uninstalled_packages)))
+    if quiet:
+        return
+
+    with open(requirement.name, 'r') as f:
+        echoes.info("{} has been updated as follows:".format(requirement.name))
+        echoes.success(f.read())

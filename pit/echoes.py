@@ -13,6 +13,15 @@ def info(message):
     click.echo(message)
 
 
+def success(message):
+    """Display Success message
+
+    :param message: Success message
+
+    """
+    click.echo(click.style(message, fg='green'))
+
+
 def warn(message):
     """Display Warning message
 

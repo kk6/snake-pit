@@ -16,9 +16,15 @@ def test_install():
     result = runner.invoke(cli, ['i'])
     assert "You must give at least one requirement to install" in result.output
 
+    result = runner.invoke(cli, ['i', 'XXX'])
+    assert "No matching distribution found for XXX" in result.output
+
 
 def test_uninstall():
     from pit.cli import cli
     runner = CliRunner()
     result = runner.invoke(cli, ['u'])
     assert "Do you want to continue?" in result.output
+
+    result = runner.invoke(cli, ['u', 'XXX'], 'y')
+    assert "XXX is not installed" in result.output
