@@ -1,28 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import re
-
 import pip
 import click
 
 from . import echoes
-from .utils import classify_installed_or_not
-
-
-class AliasedGroup(click.Group):
-
-    def get_command(self, ctx, cmd_name):
-        rv = click.Group.get_command(self, ctx, cmd_name)
-        if rv is not None:
-            return rv
-        matches = [x for x in self.list_commands(ctx)
-                   if x.startswith(cmd_name)]
-        if not matches:
-            return None
-        elif len(matches) == 1:
-            return click.Group.get_command(self, ctx, matches[0])
-        ctx.fail('Too many matches: {}'.format(', '.join(sorted(matches))))
+from .groups import AliasedGroup
+from .utils import classify_installed_or_not, re_edit_requirements
 
 
 @click.group(cls=AliasedGroup)
@@ -45,21 +29,20 @@ def install(packages, requirement):
     :param packages: Install packages.
     :param requirement: Output destination of package names.
     """
-    msg = (
-        "You must give at least one requirement to install"
-        "(see 'pir --help')"
-    )
     if not packages:
-        echoes.warn(msg)
+        echoes.warn("You must give at least one requirement to install"
+                    "(see 'pir --help')")
         return
 
     will_install, need_upgrade = classify_installed_or_not(packages)
 
-    echoes.info(
-        "Following packages installed. "
-        "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
+    if need_upgrade:
+        echoes.info(
+            "Following packages installed. "
+            "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
 
     if not will_install:
+        echoes.warn("There is no installable packages a new.")
         return
 
     raised = pip.main(["install"] + [pkg for pkg in will_install])
@@ -106,25 +89,9 @@ def uninstall(packages, requirement):
         else:
             uninstalled_packages.append(pkg)
 
-    output = []
-    pattern = re.compile('^[\w0-9\-.]+')
-    for line in requirement.readlines():
-        match_obj = pattern.match(line)
-        if match_obj:
-            matched_pkg = match_obj.group().lower()
-            if matched_pkg not in packages:
-                output.append(line)
-        else:
-            output.append(line)
-    content = '\n'.join(output)
-    if output[-1] != '\n':
-        output += '\n'
+    content = re_edit_requirements(requirement.readlines(), packages)
     with open(requirement.name, 'w') as f:
         f.write(content)
     msg = "Remove the following packages from {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
                            packages=", ".join(uninstalled_packages)))
-
-
-if __name__ == '__main__':
-    cli()
