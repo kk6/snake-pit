@@ -11,10 +11,13 @@ from .utils import (
     classify_installed_or_not,
     re_edit_requirements,
     get_dependencies,
+    print_version,
 )
 
 
 @click.group(cls=AliasedGroup)
+@click.option('--version', '-V', is_flag=True, callback=print_version,
+              expose_value=False, is_eager=True)
 def cli():
     """Depending on management packages, and then edit the requirements file.
     """
