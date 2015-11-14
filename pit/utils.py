@@ -3,6 +3,7 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 import re
 
+from pkg_resources import working_set
 import pip
 
 
@@ -45,6 +46,36 @@ def re_edit_requirements(lines, will_remove):
         matched = pattern.match(line)
         if not matched or matched.group().lower() not in will_remove:
             re_editing.append(line)
-    if re_editing[-1] != '\n':
+    if re_editing and re_editing[-1] != '\n':
         re_editing.append('\n')
     return ''.join(re_editing)
+
+
+def get_dependency_tree(package):
+    """Returns dependency tree by nested list
+
+    :param package: Top level package.
+    :return: Dependency tree.
+    :rtype: list
+
+    """
+    tree = [package]
+    top_pkg = working_set.by_key[package]
+    for p in top_pkg.requires():
+        tree.append(get_dependency_tree(p.key))
+    return tree
+
+
+def get_dependencies(package):
+    """Returns dependencies by flat list
+
+    :param package: Top level package.
+    :return: Dependencies
+    :rtype: list
+
+    """
+    dependencies = [package]
+    top_pkg = working_set.by_key[package]
+    for p in top_pkg.requires():
+        dependencies.extend(get_dependencies(p.key))
+    return dependencies
