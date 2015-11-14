@@ -25,9 +25,10 @@ def cli():
 
 @cli.command()
 @click.argument('packages', nargs=-1)
-@click.option('--requirement', '-r', default='requirements.in',
-              type=click.File('a'),
-              help="Append package names to the given requirement file.")
+@click.option(
+    '--requirement', '-r', default='requirements.in', type=click.File('a'),
+    help="Append package names to the given requirement file."
+)
 def install(packages, requirement):
     """Install packages and write requirements file.
 
@@ -66,9 +67,10 @@ def install(packages, requirement):
 
 @cli.command()
 @click.argument('packages', nargs=-1)
-@click.option('--requirement', '-r', default='requirements.in',
-              type=click.File('r'),
-              help="Remove package names from the given requirement file.")
+@click.option(
+    '--requirement', '-r', default='requirements.in', type=click.File('r'),
+    help="Remove package names from the given requirement file."
+)
 @click.confirmation_option(help="Are you sure you want to uninstall these packages?")
 def uninstall(packages, requirement):
     """Uninstall packages and remove from requirements file.
@@ -80,12 +82,11 @@ def uninstall(packages, requirement):
     :param requirement: Output destination of left package names.
 
     """
-    msg = (
-        "You must give at least one requirement to uninstall"
-        "(see 'pit --help')"
-    )
     if not packages:
-        echoes.err(msg)
+        echoes.err(
+            "You must give at least one requirement to uninstall"
+            "(see 'pit --help')"
+        )
         return
 
     uninstalled_packages = []

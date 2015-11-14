@@ -10,6 +10,15 @@ from . import __version__
 from . import echoes
 
 
+def print_version(ctx, param, value):
+    """Print version info."""
+
+    if not value or ctx.resilient_parsing:
+        return
+    echoes.info('snake-pit version: {}'.format(__version__))
+    ctx.exit()
+
+
 def get_installed_package_set():
     """Returns installed packages
 
@@ -82,10 +91,3 @@ def get_dependencies(package):
     for p in top_pkg.requires():
         dependencies.extend(get_dependencies(p.key))
     return dependencies
-
-
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    echoes.info('snake-pit version: {}'.format(__version__))
-    ctx.exit()

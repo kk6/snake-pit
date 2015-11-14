@@ -2,6 +2,14 @@
 from click.testing import CliRunner
 
 
+def test_version():
+    from pit.cli import cli
+    from pit import __version__
+    runner = CliRunner()
+    result = runner.invoke(cli, ['--version'])
+    assert "snake-pit version: {}".format(__version__) in result.output
+
+
 def test_install():
     from pit.cli import cli
     runner = CliRunner()

@@ -1,7 +1,8 @@
 snake-pit
 =========
 
-|CircleCI| |Coverage Status| |Requires.io| |Code Climate|
+|CircleCI| |Coverage Status| |Requires.io| |Code Climate| |Code Health|
+|GitHub license|
 
 Depending on the installation or uninstall packages, and then edit the
 requirements file.
@@ -84,3 +85,7 @@ MIT
    :target: https://requires.io/github/kk6/snake-pit/requirements/
 .. |Code Climate| image:: https://img.shields.io/codeclimate/github/kk6/snake-pit/badges/gpa.svg?style=flat-square
    :target: https://codeclimate.com/github/kk6/snake-pit
+.. |Code Health| image:: https://landscape.io/github/kk6/snake-pit/master/landscape.svg?style=flat-square
+   :target: https://landscape.io/github/kk6/snake-pit/master
+.. |GitHub license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+   :target: https://raw.githubusercontent.com/kk6/snake-pit/master/LICENSE
