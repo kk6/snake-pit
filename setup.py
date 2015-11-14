@@ -48,6 +48,6 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        pir = pir.cli:cli
+        pir = pir.__main__:cli
     """
 )

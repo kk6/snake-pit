@@ -96,7 +96,3 @@ def uninstall(packages, requirement):
     msg = "Remove the following packages from {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirement.name,
                            packages=", ".join(uninstalled_packages)))
-
-
-if __name__ == '__main__':
-    cli()
