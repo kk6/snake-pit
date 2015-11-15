@@ -13,11 +13,11 @@ import pytest
 def test_aliased_group(cmd, expected_output):
     import click
     from click.testing import CliRunner
-    from pit.groups import AliasedGroup
+    from snakepit.groups import AliasedGroup
 
     @click.group(cls=AliasedGroup)
     def pit():
-        click.echo("I'm pit")
+        click.echo("I'm snakepit")
 
     @pit.command()
     def install():

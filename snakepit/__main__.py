@@ -2,7 +2,7 @@
 """
 The main entry point.
 
-Invoke as `pit' or `python -m pit'.
+Invoke as `snakepit' or `python -m snakepit'.
 """
 import sys
 from .cli import cli

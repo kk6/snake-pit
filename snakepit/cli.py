@@ -42,7 +42,7 @@ def install(packages, requirement, quiet):
     """
     if not packages:
         echoes.warn("You must give at least one requirement to install"
-                    "(see 'pit --help')")
+                    "(see 'snakepit --help')")
         return
 
     will_install, need_upgrade = classify_installed_or_not(packages)
@@ -93,7 +93,7 @@ def uninstall(packages, requirement, quiet):
     if not packages:
         echoes.err(
             "You must give at least one requirement to uninstall"
-            "(see 'pit --help')"
+            "(see 'snakepit --help')"
         )
         return
 
