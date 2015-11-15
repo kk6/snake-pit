@@ -32,6 +32,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     install_requires=[
         "Click",
+        "PyYAML",
     ],
     tests_require=['pytest'],
     long_description=long_description,
