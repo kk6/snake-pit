@@ -11,7 +11,7 @@ Depending on the installation or uninstall packages, and then edit the requireme
 
 ## Install snake-pit
 
-```
+```console
 $ pip install snake-pit
 ```
 
@@ -19,7 +19,7 @@ $ pip install snake-pit
 
 ### install
 
-```
+```console
 $ echo '#requirements.in' > requirements.in
 
 $ pit install flask pytest
@@ -35,7 +35,7 @@ pytest
 
 ### uninstall
 
-```
+```console
 $ cat requirements.in
 #requirements.in
 requests
@@ -54,7 +54,7 @@ requests
 
 ## Aliases
 
-```
+```console
 $ pit i django  # install django
 $ pit u django  # uninstall django
 ```
@@ -63,7 +63,7 @@ $ pit u django  # uninstall django
 
 ### Update README
 
-```
+```console
 $ pandoc -f markdown -t rst README.md > README.rst
 ```
 

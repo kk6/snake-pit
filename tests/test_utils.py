@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+snakepit.utils
+--------------
+
+Utilities.
+"""
+from textwrap import dedent
 import pytest
 
 
@@ -24,9 +31,10 @@ def test_re_edit_requirements():
         "pytest\n",
         "\n",
     ]
-    after = """# requirements.in
-pytest
+    after = dedent("""\
+        # requirements.in
+        pytest
 
-"""
+    """)
     content = re_edit_requirements(before, ['flask'])
     assert content == after

@@ -7,7 +7,7 @@ def test_version():
     from snakepit import __version__
     runner = CliRunner()
     result = runner.invoke(cli, ['--version'])
-    assert "snake-pit version: {}".format(__version__) in result.output
+    assert "snake-pit, version {}".format(__version__) in result.output
 
 
 def test_install():

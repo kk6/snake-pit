@@ -1,26 +1,18 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, print_function, absolute_import, unicode_literals
+
+"""Utilities."""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
 
-from pkg_resources import working_set
 import pip
 
-from . import __version__
-from . import echoes
-
-
-def print_version(ctx, param, value):
-    """Print version info."""
-
-    if not value or ctx.resilient_parsing:
-        return
-    echoes.info('snake-pit version: {}'.format(__version__))
-    ctx.exit()
+from pkg_resources import working_set
 
 
 def get_installed_package_set():
-    """Returns installed packages
+    """Return installed packages.
 
     :return: Installed packages.
     :rtype: set
@@ -30,7 +22,7 @@ def get_installed_package_set():
 
 
 def classify_installed_or_not(packages):
-    """Classify packages installed or not
+    """Classify packages installed or not.
 
     :param packages: Passed packages by user.
     :return: Install candidates and installed packages.
@@ -44,7 +36,7 @@ def classify_installed_or_not(packages):
 
 
 def re_edit_requirements(lines, will_remove):
-    """Re-Edit requirements file
+    """Re-Edit requirements file.
 
     :param lines: requirement.readlines()'s return value.
     :param will_remove: Will be removed packages.
@@ -64,7 +56,7 @@ def re_edit_requirements(lines, will_remove):
 
 
 def get_dependency_tree(package):
-    """Returns dependency tree by nested list
+    """Return dependency tree by nested list.
 
     :param package: Top level package.
     :return: Dependency tree.
@@ -79,7 +71,7 @@ def get_dependency_tree(package):
 
 
 def get_dependencies(package):
-    """Returns dependencies by flat list
+    """Return dependencies by flat list.
 
     :param package: Top level package.
     :return: Dependencies

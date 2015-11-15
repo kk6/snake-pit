@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, print_function, absolute_import, unicode_literals
+"""Main `pit` CLI."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-import pip
 import click
 
+import pip
+
+from . import __version__
 from . import echoes
 from .groups import AliasedGroup
 from .utils import (
-    get_installed_package_set,
     classify_installed_or_not,
-    re_edit_requirements,
     get_dependencies,
-    print_version,
+    get_installed_package_set,
+    re_edit_requirements,
 )
 
 
 @click.group(cls=AliasedGroup)
-@click.option('--version', '-V', is_flag=True, callback=print_version,
-              expose_value=False, is_eager=True)
+@click.version_option(__version__, '--version', '-V', prog_name='snake-pit')
 def cli():
     """Depending on management packages, and then edit the requirements file.
     """

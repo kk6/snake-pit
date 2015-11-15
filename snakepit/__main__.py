@@ -5,6 +5,7 @@ The main entry point.
 Invoke as `snakepit' or `python -m snakepit'.
 """
 import sys
+
 from .cli import cli
 
 

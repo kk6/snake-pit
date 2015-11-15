@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, print_function, absolute_import, unicode_literals
+"""Wrapped functions for click.echo ."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import click
 
 
 def info(message):
-    """Display Information message
+    """Display Information message.
 
     :param message: Information message
 
@@ -14,7 +15,7 @@ def info(message):
 
 
 def success(message):
-    """Display Success message
+    """Display Success message.
 
     :param message: Success message
 
@@ -23,7 +24,7 @@ def success(message):
 
 
 def warn(message):
-    """Display Warning message
+    """Display Warning message.
 
     :param message: Warning message
 
@@ -32,7 +33,7 @@ def warn(message):
 
 
 def err(message):
-    """Display Error message
+    """Display Error message.
 
     :param message: Error message
 
