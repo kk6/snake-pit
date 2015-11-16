@@ -62,4 +62,5 @@ wheelhouse/
 # Project Repository
 requirements.in
 requirements/
-pit.yml
+*pit.yml
+.pitrc

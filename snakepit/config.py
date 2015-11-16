@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
+import os
 
 import yaml
 
 from . import exceptions
 from ._compat import FileNotFoundError
 
-YAML_FILE = 'pit.yml'
+PIT_CONFIG = os.environ.get('PIT_CONFIG', 'pit.yml')
 
 
-def get_yaml_data(filename=YAML_FILE):
-    """Return pit.yml data."""
+def get_yaml_data(filename=PIT_CONFIG):
+    """Return pit.yml data.
+
+    :param filename: YAML file name
+    """
     with open(filename, 'r') as f:
         return yaml.load(f)
 
 
-def get_requirements_file(requirements_key=None, yml=YAML_FILE, mode='r'):
+def get_requirements_file(requirements_key=None, yml=PIT_CONFIG, mode='r'):
     """Return requirements file path from yaml.
 
     :param requirements_key: requirements key.
+    :param yml: YAML file name.
+    :param mode: File opening mode.
 
     """
     try:
