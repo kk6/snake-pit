@@ -11,13 +11,8 @@ import pip
 
 from . import __version__
 from . import echoes
-from .config import get_requirements_file
-from .exceptions import (
-    DefaultKeyNotFound,
-    RequirementsFileNotFoundError,
-    RequirementsKeyNotFound,
-    YamlFileNotFoundError,
-)
+from .config import DEFAULT_CONFIG, get_config, get_requirements_path
+from .exceptions import ConfigDoesNotExist, InvalidConfiguration
 from .groups import AliasedGroup
 from .utils import (
     classify_installed_or_not,
@@ -31,15 +26,23 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.group(cls=AliasedGroup, context_settings=CONTEXT_SETTINGS)
 @click.version_option(__version__, '--version', '-V', prog_name='snake-pit')
-def cli():
+@click.pass_context
+def cli(ctx):
     """Depending on management packages, and then edit the requirements file.
     """
+    ctx.obj = {}
+    try:
+        ctx.obj['CONFIG'] = get_config()
+    except (ConfigDoesNotExist, InvalidConfiguration) as e:
+        echoes.err(str(e))
+        echoes.warn("Now use default config.")
+        ctx.obj['CONFIG'] = DEFAULT_CONFIG
 
 
 @cli.command()
 @click.argument('packages', nargs=-1)
 @click.option(
-    '--requirement', '-r', default='requirements.in', type=click.File('a'),
+    '--requirement', '-r', type=click.Path(exists=True),
     help="Append package names to the given requirement file."
 )
 @click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
@@ -47,29 +50,28 @@ def cli():
     Specify requirements file name.
     This option takes precedence over the '-r' option.
     """))
-def install(packages, requirement, quiet, name):
+@click.pass_context
+def install(ctx, packages, requirement, quiet, name):
     """Install packages and write requirements file.
 
     To append package names were installed in requirements file,
     if the 'pip install' was successful.
 
     """
+
     if not packages:
         echoes.warn("You must give at least one requirement to install"
                     "(see 'snakepit --help')")
         sys.exit(0)
 
-    name_specified = bool(name)
-    if not name:
-        name = 'default'
-    try:
-        requirement = get_requirements_file(name, mode='a')
-    except (YamlFileNotFoundError, RequirementsFileNotFoundError,
-            RequirementsKeyNotFound, DefaultKeyNotFound
-            ) as e:
-        if name_specified:
+    if not requirement:
+        try:
+            requirement = get_requirements_path(ctx.obj['CONFIG'], name)
+        except InvalidConfiguration as e:
             echoes.err(str(e))
             sys.exit(1)
+
+    requirements_file = click.open_file(requirement, 'a')
 
     will_install, need_upgrade = classify_installed_or_not(packages)
 
@@ -86,22 +88,22 @@ def install(packages, requirement, quiet, name):
     if raised:
         sys.exit(1)
 
-    requirement.write('\n'.join(packages) + '\n')
+    requirements_file.write('\n'.join(packages) + '\n')
     msg = "Append the following packages in {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirement.name,
+    echoes.info(msg.format(requirement=requirements_file.name,
                            packages=", ".join(will_install)))
     if quiet:
         sys.exit(0)
-    requirement.seek(0)
-    with open(requirement.name, 'r') as f:
-        echoes.info("{} has been updated as follows:".format(requirement.name))
+    requirements_file.seek(0)
+    with open(requirements_file.name, 'r') as f:
+        echoes.info("{} has been updated as follows:".format(requirements_file.name))
         echoes.success(f.read())
 
 
 @cli.command()
 @click.argument('packages', nargs=-1)
 @click.option(
-    '--requirement', '-r', default='requirements.in', type=click.File('r'),
+    '--requirement', '-r', type=click.Path(exists=True),
     help="Remove package names from the given requirement file."
 )
 @click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
@@ -110,7 +112,8 @@ def install(packages, requirement, quiet, name):
     This option takes precedence over the '-r' option.
     """))
 @click.confirmation_option(help="Are you sure you want to uninstall these packages?")
-def uninstall(packages, requirement, quiet, name):
+@click.pass_context
+def uninstall(ctx, packages, requirement, quiet, name):
     """Uninstall packages and remove from requirements file.
 
     To Remove uninstalled packages from requirements file,
@@ -124,14 +127,14 @@ def uninstall(packages, requirement, quiet, name):
         )
         sys.exit(1)
 
-    if name:
+    if not requirement:
         try:
-            requirement = get_requirements_file(name)
-        except (YamlFileNotFoundError, RequirementsFileNotFoundError,
-                RequirementsKeyNotFound, DefaultKeyNotFound
-                ) as e:
+            requirement = get_requirements_path(ctx.obj['CONFIG'], name)
+        except InvalidConfiguration as e:
             echoes.err(str(e))
             sys.exit(1)
+
+    requirements_file = click.open_file(requirement, 'r')
 
     uninstalled_packages = []
     for pkg in packages:
@@ -150,15 +153,15 @@ def uninstall(packages, requirement, quiet, name):
     if not uninstalled_packages:
         sys.exit(1)
 
-    content = re_edit_requirements(requirement.readlines(), packages)
-    with open(requirement.name, 'w') as f:
+    content = re_edit_requirements(requirements_file.readlines(), packages)
+    with open(requirements_file.name, 'w') as f:
         f.write(content)
     msg = "Remove the following packages from {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirement.name,
+    echoes.info(msg.format(requirement=requirements_file.name,
                            packages=", ".join(uninstalled_packages)))
     if quiet:
         sys.exit(0)
 
-    with open(requirement.name, 'r') as f:
-        echoes.info("{} has been updated as follows:".format(requirement.name))
+    with open(requirements_file.name, 'r') as f:
+        echoes.info("{} has been updated as follows:".format(requirements_file.name))
         echoes.success(f.read())

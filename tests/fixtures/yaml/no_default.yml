@@ -1,3 +1,0 @@
-requirements:
-  base:
-    tests/fixtures/requirements/base.in

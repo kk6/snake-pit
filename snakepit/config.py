@@ -1,61 +1,51 @@
 # -*- coding: utf-8 -*-
+import copy
 import os
 
 import yaml
 
 from . import exceptions
-from ._compat import FileNotFoundError
 
 PIT_CONFIG = os.environ.get('PIT_CONFIG', 'pit.yml')
+DEFAULT_CONFIG = {
+    'default': 'requirements.in',
+}
 
 
-def get_yaml_data(filename=PIT_CONFIG):
+def get_config(config_path=PIT_CONFIG):
     """Return pit.yml data.
 
-    :param filename: YAML file name
-    """
-    with open(filename, 'r') as f:
-        return yaml.load(f)
-
-
-def get_requirements_file(requirements_key=None, yml=PIT_CONFIG, mode='r'):
-    """Return requirements file path from yaml.
-
-    :param requirements_key: requirements key.
-    :param yml: YAML file name.
-    :param mode: File opening mode.
+    :param config_path: YAML file name
 
     """
-    try:
-        data = get_yaml_data(yml)
-    except (FileNotFoundError, IOError):
-        raise exceptions.YamlFileNotFoundError(
-            "'pit.yml' not found in this directory.")
-
-    if requirements_key:
-        pass
-    elif 'default' in data:
-        requirements_key = data['default']
-    else:
-        requirements_key = 'default'
-
-    try:
-        req = data['requirements']
-    except KeyError:
-        raise exceptions.RequirementsKeyNotFound(
-            "'requirement' key must be required in 'pit.yml'")
-
-    try:
-        requirements_path = req[requirements_key]
-    except KeyError:
-        raise exceptions.DefaultKeyNotFound(
-            "Default requirements key not found in 'pit.yml'"
+    if not os.path.exists(config_path):
+        raise exceptions.ConfigDoesNotExist(
+            "'{}' not found in this directory.".format(config_path)
         )
-    else:
+
+    with open(config_path, 'r') as f:
         try:
-            requirements_file = open(requirements_path, mode)
-        except (FileNotFoundError, IOError):
-            raise exceptions.RequirementsFileNotFoundError(
-                "Requirements file not found: {}".format(requirements_path))
-        else:
-            return requirements_file
+            yaml_data = yaml.safe_load(f)
+        except yaml.parser.ParserError as e:
+            raise exceptions.InvalidConfiguration(
+                '{0} is not a valid YAML file: line {1}: {2}'.format(
+                    config_path,
+                    e.problem_mark.line,
+                    e.problem,
+                )
+            )
+    config = copy.copy(DEFAULT_CONFIG)
+    config.update(yaml_data)
+
+    return config
+
+
+def get_requirements_path(config, name):
+    if not name:
+        name = 'default'
+    try:
+        return config[name]
+    except KeyError:
+        raise exceptions.InvalidConfiguration(
+            "Key not found in config: {}".format(name)
+        )

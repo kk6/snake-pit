@@ -1,5 +1,0 @@
-default:
-  base
-requirements:
-  base:
-    base.in
