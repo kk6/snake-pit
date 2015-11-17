@@ -2,17 +2,17 @@
 import copy
 import os
 
+import click
 import yaml
 
 from . import exceptions
 
-PIT_CONFIG = os.environ.get('PIT_CONFIG', 'pit.yml')
 DEFAULT_CONFIG = {
     'default': 'requirements.in',
 }
 
 
-def get_config(config_path=PIT_CONFIG):
+def get_config(config_path):
     """Return pit.yml data.
 
     :param config_path: YAML file name
@@ -20,7 +20,7 @@ def get_config(config_path=PIT_CONFIG):
     """
     if not os.path.exists(config_path):
         raise exceptions.ConfigDoesNotExist(
-            "'{}' not found in this directory.".format(config_path)
+            "Config file not found: '{}'".format(config_path)
         )
 
     with open(config_path, 'r') as f:
@@ -40,12 +40,14 @@ def get_config(config_path=PIT_CONFIG):
     return config
 
 
-def get_requirements_path(config, name):
-    if not name:
-        name = 'default'
-    try:
-        return config[name]
-    except KeyError:
-        raise exceptions.InvalidConfiguration(
-            "Key not found in config: {}".format(name)
-        )
+def get_requirements_file(config, requirement_path, name, mode='r'):
+    if not requirement_path:
+        if not name:
+            name = 'default'
+        try:
+            requirement_path = config[name]
+        except KeyError:
+            raise exceptions.RequirementsKeyError(
+                "Key not found in config: {}".format(name)
+            )
+    return click.open_file(requirement_path, mode)

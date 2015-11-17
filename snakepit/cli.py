@@ -2,6 +2,7 @@
 """Main `pit` CLI."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import sys
 from textwrap import dedent
 
@@ -11,8 +12,12 @@ import pip
 
 from . import __version__
 from . import echoes
-from .config import DEFAULT_CONFIG, get_config, get_requirements_path
-from .exceptions import ConfigDoesNotExist, InvalidConfiguration
+from .config import DEFAULT_CONFIG, get_config, get_requirements_file
+from .exceptions import (
+    ConfigDoesNotExist,
+    InvalidConfiguration,
+    RequirementsKeyError,
+)
 from .groups import AliasedGroup
 from .utils import (
     classify_installed_or_not,
@@ -22,6 +27,7 @@ from .utils import (
 )
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONFIG_PATH = os.environ.get('PIT_CONFIG_PATH', 'pit.yml')
 
 
 @click.group(cls=AliasedGroup, context_settings=CONTEXT_SETTINGS)
@@ -32,15 +38,15 @@ def cli(ctx):
     """
     ctx.obj = {}
     try:
-        ctx.obj['CONFIG'] = get_config()
+        ctx.obj['CONFIG'] = get_config(CONFIG_PATH)
     except (ConfigDoesNotExist, InvalidConfiguration) as e:
         echoes.err(str(e))
-        echoes.warn("Now use default config.")
+        echoes.warn("Instead, it uses the default configuration.")
         ctx.obj['CONFIG'] = DEFAULT_CONFIG
 
 
 @cli.command()
-@click.argument('packages', nargs=-1)
+@click.argument('packages', nargs=-1, required=True)
 @click.option(
     '--requirement', '-r', type=click.Path(exists=True),
     help="Append package names to the given requirement file."
@@ -58,20 +64,13 @@ def install(ctx, packages, requirement, quiet, name):
     if the 'pip install' was successful.
 
     """
-
-    if not packages:
-        echoes.warn("You must give at least one requirement to install"
-                    "(see 'snakepit --help')")
-        sys.exit(0)
-
-    if not requirement:
-        try:
-            requirement = get_requirements_path(ctx.obj['CONFIG'], name)
-        except InvalidConfiguration as e:
-            echoes.err(str(e))
-            sys.exit(1)
-
-    requirements_file = click.open_file(requirement, 'a')
+    try:
+        requirements_file = get_requirements_file(
+            ctx.obj['CONFIG'], requirement, name, mode='a'
+        )
+    except RequirementsKeyError as e:
+        echoes.err(str(e))
+        sys.exit(2)
 
     will_install, need_upgrade = classify_installed_or_not(packages)
 
@@ -86,7 +85,7 @@ def install(ctx, packages, requirement, quiet, name):
 
     raised = pip.main(["install"] + [pkg for pkg in will_install])
     if raised:
-        sys.exit(1)
+        sys.exit(2)
 
     requirements_file.write('\n'.join(packages) + '\n')
     msg = "Append the following packages in {requirement}: {packages}"
@@ -101,7 +100,7 @@ def install(ctx, packages, requirement, quiet, name):
 
 
 @cli.command()
-@click.argument('packages', nargs=-1)
+@click.argument('packages', nargs=-1, required=True)
 @click.option(
     '--requirement', '-r', type=click.Path(exists=True),
     help="Remove package names from the given requirement file."
@@ -120,21 +119,13 @@ def uninstall(ctx, packages, requirement, quiet, name):
     if the 'pip uninstall' was successful.
 
     """
-    if not packages:
-        echoes.err(
-            "You must give at least one requirement to uninstall"
-            "(see 'snakepit --help')"
+    try:
+        requirements_file = get_requirements_file(
+            ctx.obj['CONFIG'], requirement, name, mode='r'
         )
-        sys.exit(1)
-
-    if not requirement:
-        try:
-            requirement = get_requirements_path(ctx.obj['CONFIG'], name)
-        except InvalidConfiguration as e:
-            echoes.err(str(e))
-            sys.exit(1)
-
-    requirements_file = click.open_file(requirement, 'r')
+    except RequirementsKeyError as e:
+        echoes.err(str(e))
+        sys.exit(2)
 
     uninstalled_packages = []
     for pkg in packages:
@@ -151,7 +142,7 @@ def uninstall(ctx, packages, requirement, quiet, name):
             uninstalled_packages.append(pkg)
 
     if not uninstalled_packages:
-        sys.exit(1)
+        sys.exit(2)
 
     content = re_edit_requirements(requirements_file.readlines(), packages)
     with open(requirements_file.name, 'w') as f:

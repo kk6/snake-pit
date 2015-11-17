@@ -9,3 +9,7 @@ class ConfigDoesNotExist(FileNotFoundError):
 
 class InvalidConfiguration(Exception):
     """Raised when does not open config file"""
+
+
+class RequirementsKeyError(KeyError):
+    """Raised when key not found in config file."""
