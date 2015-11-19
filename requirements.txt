@@ -2,7 +2,7 @@ click==5.1
 coverage==4.0.2
 pluggy==0.3.1
 py==1.4.30
-pytest==2.8.2
+pytest==2.8.3
 pytest-cov==2.2.0
 tox==2.2.1
 virtualenv==13.1.2
