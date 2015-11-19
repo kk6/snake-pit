@@ -13,18 +13,18 @@ import pip
 from . import __version__
 from . import echoes
 from .config import DEFAULT_CONFIG, get_config, get_requirements_file
+from .dists import (
+    classify_installed_or_not,
+    get_installed_package_set,
+    DistFinder,
+)
 from .exceptions import (
     ConfigDoesNotExist,
     InvalidConfiguration,
     RequirementsKeyError,
 )
 from .groups import AliasedGroup
-from .utils import (
-    classify_installed_or_not,
-    get_dependencies,
-    get_installed_package_set,
-    re_edit_requirements,
-)
+from .utils import re_edit_requirements
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 CONFIG_PATH = os.environ.get('PIT_CONFIG_PATH', 'pit.yml')
@@ -128,6 +128,7 @@ def uninstall(ctx, packages, requirement, quiet, name):
         sys.exit(2)
 
     uninstalled_packages = []
+    finder = DistFinder()
     for pkg in packages:
         if pkg in uninstalled_packages:
             # Already installed
@@ -135,7 +136,7 @@ def uninstall(ctx, packages, requirement, quiet, name):
         if pkg not in get_installed_package_set():
             echoes.err("{} is not installed".format(pkg))
             continue
-        if pip.main(["uninstall"] + ['-y'] + get_dependencies(pkg)):
+        if pip.main(["uninstall"] + ['-y'] + finder.get_dependencies(pkg)):
             # Uninstall failed.
             continue
         else:
