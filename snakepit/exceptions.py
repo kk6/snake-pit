@@ -3,17 +3,21 @@
 from ._compat import FileNotFoundError
 
 
-class ConfigDoesNotExist(FileNotFoundError):
+class SnakePitException(Exception):
+    """Base exception class"""
+
+
+class ConfigDoesNotExist(SnakePitException, FileNotFoundError):
     """Raised when config file not found."""
 
 
-class InvalidConfiguration(Exception):
+class InvalidConfiguration(SnakePitException):
     """Raised when does not open config file."""
 
 
-class RequirementsKeyError(KeyError):
+class RequirementsKeyError(SnakePitException, KeyError):
     """Raised when key not found in config file."""
 
 
-class DistributionNotFound(Exception):
+class DistributionNotFound(SnakePitException):
     """Raised when distribution not found."""

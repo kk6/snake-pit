@@ -13,11 +13,7 @@ import pip
 from . import __version__
 from . import echoes
 from .config import DEFAULT_CONFIG, get_config, get_requirements_file
-from .dists import (
-    classify_installed_or_not,
-    get_installed_package_set,
-    DistFinder,
-)
+from .dists import DistFinder
 from .exceptions import (
     ConfigDoesNotExist,
     InvalidConfiguration,
@@ -72,25 +68,27 @@ def install(ctx, packages, requirement, quiet, name):
         echoes.err(str(e))
         sys.exit(2)
 
-    will_install, need_upgrade = classify_installed_or_not(packages)
+    finder = DistFinder()
 
-    if need_upgrade:
+    upgradable_packages = finder.choose_installed(packages)
+    if upgradable_packages:
         echoes.info(
             "Following packages installed. "
-            "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
+            "(use pip install --upgrade to upgrade): {}".format(", ".join(upgradable_packages)))
 
-    if not will_install:
+    installable_packages = finder.choose_not_installed(packages)
+    if not installable_packages:
         echoes.warn("There is no installable packages a new.")
         sys.exit(0)
 
-    raised = pip.main(["install"] + [pkg for pkg in will_install])
+    raised = pip.main(["install"] + [pkg for pkg in installable_packages])
     if raised:
         sys.exit(2)
 
     requirements_file.write('\n'.join(packages) + '\n')
     msg = "Append the following packages in {requirement}: {packages}"
     echoes.info(msg.format(requirement=requirements_file.name,
-                           packages=", ".join(will_install)))
+                           packages=", ".join(installable_packages)))
     if quiet:
         sys.exit(0)
     requirements_file.seek(0)
@@ -127,20 +125,28 @@ def uninstall(ctx, packages, requirement, quiet, name):
         echoes.err(str(e))
         sys.exit(2)
 
-    uninstalled_packages = []
     finder = DistFinder()
-    for pkg in packages:
-        if pkg in uninstalled_packages:
-            # Already installed
-            continue
-        if pkg not in get_installed_package_set():
-            echoes.err("{} is not installed".format(pkg))
-            continue
-        if pip.main(["uninstall"] + ['-y'] + finder.get_dependencies(pkg)):
-            # Uninstall failed.
-            continue
-        else:
-            uninstalled_packages.append(pkg)
+
+    # Warning packages that are not installed.
+    not_installed = finder.choose_not_installed(packages)
+    if not_installed:
+        echoes.err(
+            "Following packages are not installed: {}".format(
+                ", ".join(not_installed)
+            )
+        )
+
+    # Run the installation.
+    uninstalled_packages = []
+    installed = finder.choose_installed(packages)
+    for pkg in installed:
+        dependencies = finder.get_dependencies(pkg)
+        if pkg not in uninstalled_packages:
+            if pip.main(["uninstall"] + ['-y'] + list({d.name for d in dependencies})):
+                # Uninstall failed.
+                continue
+            else:
+                uninstalled_packages.append(pkg)
 
     if not uninstalled_packages:
         sys.exit(2)

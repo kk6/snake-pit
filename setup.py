@@ -33,6 +33,7 @@ setup(
     install_requires=[
         "Click",
         "PyYAML",
+        "distlib",
     ],
     tests_require=['pytest'],
     long_description=long_description,

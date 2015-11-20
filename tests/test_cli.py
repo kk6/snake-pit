@@ -39,7 +39,7 @@ def test_uninstall():
 
     result = runner.invoke(cli, ['u', 'XXX'], 'y')
     assert result.exit_code == 2
-    assert "XXX is not installed" in result.output
+    assert "Following packages are not installed:" in result.output
 
     result = runner.invoke(cli, ['u', 'XXX', '-n', 'YYY'], 'y')
     assert result.exit_code == 2
