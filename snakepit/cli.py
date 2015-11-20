@@ -61,7 +61,7 @@ def install(ctx, packages, requirement, quiet, name):
     """
     try:
         requirements_file = get_requirements_file(
-            ctx.obj['CONFIG'], requirement, name, mode='a'
+            ctx.obj['CONFIG'], requirement, name, mode='a+'
         )
     except RequirementsKeyError as e:
         echoes.err(str(e))
@@ -73,7 +73,10 @@ def install(ctx, packages, requirement, quiet, name):
     if upgradable_packages:
         echoes.info(
             "Following packages installed. "
-            "(use pip install --upgrade to upgrade): {}".format(", ".join(upgradable_packages)))
+            "(use pip install --upgrade to upgrade): {}".format(
+                ", ".join(upgradable_packages)
+            )
+        )
 
     installable_packages = finder.choose_not_installed(packages)
     if not installable_packages:
@@ -85,15 +88,15 @@ def install(ctx, packages, requirement, quiet, name):
         sys.exit(2)
 
     requirements_file.write('\n'.join(packages) + '\n')
-    msg = "Append the following packages in {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirements_file.name,
-                           packages=", ".join(installable_packages)))
-    if quiet:
-        sys.exit(0)
-    requirements_file.seek(0)
-    with open(requirements_file.name, 'r') as f:
+    echoes.info("Append the following packages in {requirement}: {packages}".format(
+        requirement=requirements_file.name, packages=", ".join(installable_packages)
+    ))
+
+    if not quiet:
+        requirements_file.seek(0)
         echoes.info("{} has been updated as follows:".format(requirements_file.name))
-        echoes.success(f.read())
+        echoes.success(requirements_file.read())
+        requirements_file.close()
 
 
 @cli.command()
@@ -153,12 +156,11 @@ def uninstall(ctx, packages, requirement, quiet, name):
     content = re_edit_requirements(requirements_file.readlines(), packages)
     with open(requirements_file.name, 'w') as f:
         f.write(content)
-    msg = "Remove the following packages from {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirements_file.name,
-                           packages=", ".join(uninstalled_packages)))
-    if quiet:
-        sys.exit(0)
 
-    with open(requirements_file.name, 'r') as f:
+    echoes.info("Remove the following packages from {requirement}: {packages}".format(
+        requirement=requirements_file.name, packages=", ".join(uninstalled_packages)
+    ))
+
+    if not quiet:
         echoes.info("{} has been updated as follows:".format(requirements_file.name))
-        echoes.success(f.read())
+        echoes.success(content)
