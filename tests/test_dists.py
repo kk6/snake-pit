@@ -36,3 +36,8 @@ def test_get_dependencies_with_side_effect(finder):
     from snakepit.exceptions import DistributionNotFound
     with pytest.raises(DistributionNotFound):
         finder.get_dependencies('flask')
+
+
+def test_get_deletable_dist_set(finder):
+    dists = finder.get_deletable_dist_set('pytest')
+    assert {'pytest'} == dists

@@ -110,9 +110,10 @@ def install(ctx, packages, requirement, quiet, name):
     Specify requirements file name.
     This option takes precedence over the '-r' option.
     """))
-@click.confirmation_option(help="Are you sure you want to uninstall these packages?")
+@click.option('--auto', '-a', is_flag=True,
+              help='Uninstall as much as possible the dependent package')
 @click.pass_context
-def uninstall(ctx, packages, requirement, quiet, name):
+def uninstall(ctx, packages, requirement, quiet, name, auto):
     """Uninstall packages and remove from requirements file.
 
     To Remove uninstalled packages from requirements file,
@@ -138,19 +139,22 @@ def uninstall(ctx, packages, requirement, quiet, name):
             )
         )
 
-    # Run the installation.
-    uninstalled_packages = []
+    # Run the uninstallation.
     installed = finder.choose_installed(packages)
-    for pkg in installed:
-        dependencies = finder.get_dependencies(pkg)
-        if pkg not in uninstalled_packages:
-            if pip.uninstall(list({d.name for d in dependencies})):
-                # Uninstall failed.
-                continue
-            else:
-                uninstalled_packages.append(pkg)
+    deletable_set = set(packages)
+    if auto:
+        for pkg in installed:
+            deletable = finder.get_deletable_dist_set(pkg)
+            deletable_set |= deletable
+        echoes.info(
+            "Specified package and becomes unnecessary by which they are removed, "
+            "it will remove the following packages:\n\n{}\n".format("\n".join(deletable_set))
+        )
+        click.confirm("Are you sure?", abort=True)
+    else:
+        deletable_set.union(packages)
 
-    if not uninstalled_packages:
+    if pip.uninstall(deletable_set):
         sys.exit(2)
 
     content = re_edit_requirements(requirements_file.readlines(), packages)
@@ -158,7 +162,7 @@ def uninstall(ctx, packages, requirement, quiet, name):
         f.write(content)
 
     echoes.info("Remove the following packages from {requirement}: {packages}".format(
-        requirement=requirements_file.name, packages=", ".join(uninstalled_packages)
+        requirement=requirements_file.name, packages=", ".join(deletable_set)
     ))
 
     if not quiet:

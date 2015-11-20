@@ -1,0 +1,2 @@
+default: requirements/base.in
+dev: requirements/dev.in

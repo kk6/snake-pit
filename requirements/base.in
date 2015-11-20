@@ -1,0 +1,5 @@
+# requirements.base.in
+click
+distlib
+PyYAML
+pip-tools
