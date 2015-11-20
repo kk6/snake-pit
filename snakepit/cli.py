@@ -8,10 +8,9 @@ from textwrap import dedent
 
 import click
 
-import pip
-
 from . import __version__
 from . import echoes
+from .adapters import pip
 from .config import DEFAULT_CONFIG, get_config, get_requirements_file
 from .dists import DistFinder
 from .exceptions import (
@@ -81,7 +80,7 @@ def install(ctx, packages, requirement, quiet, name):
         echoes.warn("There is no installable packages a new.")
         sys.exit(0)
 
-    raised = pip.main(["install"] + [pkg for pkg in installable_packages])
+    raised = pip.install(installable_packages)
     if raised:
         sys.exit(2)
 
@@ -142,7 +141,7 @@ def uninstall(ctx, packages, requirement, quiet, name):
     for pkg in installed:
         dependencies = finder.get_dependencies(pkg)
         if pkg not in uninstalled_packages:
-            if pip.main(["uninstall"] + ['-y'] + list({d.name for d in dependencies})):
+            if pip.uninstall(list({d.name for d in dependencies})):
                 # Uninstall failed.
                 continue
             else:
