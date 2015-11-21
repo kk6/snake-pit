@@ -77,11 +77,11 @@ class DistFinder(object):
         #
         dists = list(self.get_installed_distributions())
         uninstall_candidates = self.get_dependencies(name)
-        remaining_dist_set = {d.name for d in dists} - {d.name for d in uninstall_candidates}
+        remaining_dist_set = {d.key for d in dists} - {d.key for d in uninstall_candidates}
         cannot_delete_dists = []
         for non_required in remaining_dist_set:
             cannot_delete_dists.extend(self.get_dependencies(non_required))
-        deletable_dist_set = {d.name for d in uninstall_candidates} - {d.name for d in cannot_delete_dists}
+        deletable_dist_set = {d.key for d in uninstall_candidates} - {d.key for d in cannot_delete_dists}
         deletable_dist_set.add(name)
         return deletable_dist_set
 
@@ -93,7 +93,7 @@ class DistFinder(object):
         :rtype: set
 
         """
-        return set(names) & {d.name for d in self.get_installed_distributions()}
+        return set(names) & {d.key for d in self.get_installed_distributions()}
 
     def choose_not_installed(self, names):
         """Return a set of not installed distributions.
@@ -103,4 +103,4 @@ class DistFinder(object):
         :rtype: set
 
         """
-        return set(names) - {d.name for d in self.get_installed_distributions()}
+        return set(names) - {d.key for d in self.get_installed_distributions()}

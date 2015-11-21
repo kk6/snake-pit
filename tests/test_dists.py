@@ -18,8 +18,8 @@ def test_choose_installed(finder):
 def test_choose_not_installed(finder):
     packages = ['click', 'pytest', 'nose', 'django']
 
-    not_instslled = finder.choose_not_installed(packages)
-    assert not_instslled == {'nose', 'django'}
+    not_installed = finder.choose_not_installed(packages)
+    assert not_installed == {'nose', 'django'}
 
 
 def test_get_distribution(finder):

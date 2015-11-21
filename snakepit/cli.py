@@ -100,7 +100,8 @@ def install(ctx, packages, requirement, quiet, name):
 
 
 @cli.command()
-@click.argument('packages', nargs=-1, required=True)
+@click.argument('packages', nargs=-1, required=True,
+                callback=lambda ctx, param, val: [v.lower() for v in val])
 @click.option(
     '--requirement', '-r', type=click.Path(exists=True),
     help="Remove package names from the given requirement file."
@@ -111,7 +112,7 @@ def install(ctx, packages, requirement, quiet, name):
     This option takes precedence over the '-r' option.
     """))
 @click.option('--auto', '-a', is_flag=True,
-              help='Uninstall as much as possible the dependent package')
+              help='Uninstall as much as possible the dependent packages.')
 @click.pass_context
 def uninstall(ctx, packages, requirement, quiet, name, auto):
     """Uninstall packages and remove from requirements file.
@@ -141,7 +142,7 @@ def uninstall(ctx, packages, requirement, quiet, name, auto):
 
     # Run the uninstallation.
     installed = finder.choose_installed(packages)
-    deletable_set = set(packages)
+    deletable_set = set(installed)
     if auto:
         for pkg in installed:
             deletable = finder.get_deletable_dist_set(pkg)
@@ -151,8 +152,6 @@ def uninstall(ctx, packages, requirement, quiet, name, auto):
             "it will remove the following packages:\n\n{}\n".format("\n".join(deletable_set))
         )
         click.confirm("Are you sure?", abort=True)
-    else:
-        deletable_set.union(packages)
 
     if pip.uninstall(deletable_set):
         sys.exit(2)
