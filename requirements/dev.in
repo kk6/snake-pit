@@ -1,0 +1,6 @@
+# requirements.dev.in
+pytest
+pytest-cov
+tox
+pip-autoremove
+pipdeptree

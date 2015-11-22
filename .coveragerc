@@ -1,6 +1,7 @@
 [run]
 omit =
     snakepit/__main__.py
+    snakepit/_compat.py
 
 [report]
 exclude_lines =

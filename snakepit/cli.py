@@ -2,128 +2,173 @@
 """Main `pit` CLI."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import click
+import os
+import sys
+from textwrap import dedent
 
-import pip
+import click
 
 from . import __version__
 from . import echoes
-from .groups import AliasedGroup
-from .utils import (
-    classify_installed_or_not,
-    get_dependencies,
-    get_installed_package_set,
-    re_edit_requirements,
+from .adapters import pip
+from .config import DEFAULT_CONFIG, get_config, get_requirements_file
+from .dists import DistFinder
+from .exceptions import (
+    ConfigDoesNotExist,
+    InvalidConfiguration,
+    RequirementsKeyError,
 )
+from .groups import AliasedGroup
+from .utils import re_edit
+
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONFIG_PATH = os.environ.get('PIT_CONFIG_PATH', 'pit.yml')
+WHITE_LIST = ('pip', 'setuptools', 'click', 'distlib', 'pyyaml')
 
 
-@click.group(cls=AliasedGroup)
+@click.group(cls=AliasedGroup, context_settings=CONTEXT_SETTINGS)
 @click.version_option(__version__, '--version', '-V', prog_name='snake-pit')
-def cli():
+@click.pass_context
+def cli(ctx):
     """Depending on management packages, and then edit the requirements file.
     """
+    ctx.obj = {}
+    try:
+        ctx.obj['CONFIG'] = get_config(CONFIG_PATH)
+    except (ConfigDoesNotExist, InvalidConfiguration) as e:
+        echoes.err(str(e))
+        echoes.warn("Instead, it uses the default configuration.")
+        ctx.obj['CONFIG'] = DEFAULT_CONFIG
 
 
 @cli.command()
-@click.argument('packages', nargs=-1)
+@click.argument('packages', nargs=-1, required=True)
 @click.option(
-    '--requirement', '-r', default='requirements.in', type=click.File('a'),
+    '--requirement', '-r', type=click.Path(exists=True),
     help="Append package names to the given requirement file."
 )
 @click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
-def install(packages, requirement, quiet):
+@click.option('--name', '-n', help=dedent("""\
+    Specify requirements file name.
+    This option takes precedence over the '-r' option.
+    """))
+@click.pass_context
+def install(ctx, packages, requirement, quiet, name):
     """Install packages and write requirements file.
 
     To append package names were installed in requirements file,
     if the 'pip install' was successful.
 
-    :param packages: Install packages.
-    :param requirement: Output destination of package names.
-
     """
-    if not packages:
-        echoes.warn("You must give at least one requirement to install"
-                    "(see 'snakepit --help')")
-        return
+    try:
+        requirements_file = get_requirements_file(
+            ctx.obj['CONFIG'], requirement, name, mode='a+'
+        )
+    except RequirementsKeyError as e:
+        echoes.err(str(e))
+        sys.exit(2)
 
-    will_install, need_upgrade = classify_installed_or_not(packages)
+    finder = DistFinder()
 
-    if need_upgrade:
+    upgradable_packages = finder.choose_installed(packages)
+    if upgradable_packages:
         echoes.info(
             "Following packages installed. "
-            "(use pip install --upgrade to upgrade): {}".format(", ".join(need_upgrade)))
+            "(use pip install --upgrade to upgrade): {}".format(
+                ", ".join(upgradable_packages)
+            )
+        )
 
-    if not will_install:
+    installable_packages = finder.choose_not_installed(packages)
+    if not installable_packages:
         echoes.warn("There is no installable packages a new.")
-        return
+        sys.exit(0)
 
-    raised = pip.main(["install"] + [pkg for pkg in will_install])
+    raised = pip.install(installable_packages)
     if raised:
-        return
+        sys.exit(2)
 
-    requirement.write('\n'.join(packages) + '\n')
-    msg = "Append the following packages in {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirement.name,
-                           packages=", ".join(will_install)))
-    if quiet:
-        return
-    requirement.seek(0)
-    with open(requirement.name, 'r') as f:
-        echoes.info("{} has been updated as follows:".format(requirement.name))
-        echoes.success(f.read())
+    requirements_file.write('\n'.join(packages) + '\n')
+    echoes.info("Append the following packages in {requirement}: {packages}".format(
+        requirement=requirements_file.name, packages=", ".join(installable_packages)
+    ))
+
+    if not quiet:
+        requirements_file.seek(0)
+        echoes.info("{} has been updated as follows:".format(requirements_file.name))
+        echoes.success(requirements_file.read())
+        requirements_file.close()
 
 
 @cli.command()
-@click.argument('packages', nargs=-1)
+@click.argument('packages', nargs=-1, required=True,
+                callback=lambda ctx, param, val: [v.lower() for v in val])
 @click.option(
-    '--requirement', '-r', default='requirements.in', type=click.File('r'),
+    '--requirement', '-r', type=click.Path(exists=True),
     help="Remove package names from the given requirement file."
 )
 @click.option('--quiet', '-q', is_flag=True, help='Do not display the output result.')
-@click.confirmation_option(help="Are you sure you want to uninstall these packages?")
-def uninstall(packages, requirement, quiet):
+@click.option('--name', '-n', help=dedent("""\
+    Specify requirements file name.
+    This option takes precedence over the '-r' option.
+    """))
+@click.option('--auto', '-a', is_flag=True,
+              help='Uninstall as much as possible the dependent packages.')
+@click.pass_context
+def uninstall(ctx, packages, requirement, quiet, name, auto):
     """Uninstall packages and remove from requirements file.
 
     To Remove uninstalled packages from requirements file,
     if the 'pip uninstall' was successful.
 
-    :param packages: Uninstall packages.
-    :param requirement: Output destination of left package names.
-
     """
-    if not packages:
-        echoes.err(
-            "You must give at least one requirement to uninstall"
-            "(see 'snakepit --help')"
+    try:
+        requirements_file = get_requirements_file(
+            ctx.obj['CONFIG'], requirement, name, mode='r'
         )
-        return
+    except RequirementsKeyError as e:
+        echoes.err(str(e))
+        sys.exit(2)
 
-    uninstalled_packages = []
-    for pkg in packages:
-        if pkg in uninstalled_packages:
-            # Already installed
-            continue
-        if pkg not in get_installed_package_set():
-            echoes.err("{} is not installed".format(pkg))
-            continue
-        if pip.main(["uninstall"] + ['-y'] + get_dependencies(pkg)):
-            # Uninstall failed.
-            continue
-        else:
-            uninstalled_packages.append(pkg)
+    finder = DistFinder(WHITE_LIST)
 
-    if not uninstalled_packages:
-        return
+    # Warning packages that are not installed.
+    not_installed = finder.choose_not_installed(packages)
+    if not_installed:
+        echoes.err(
+            "Following packages are not installed: {}".format(
+                ", ".join(not_installed)
+            )
+        )
 
-    content = re_edit_requirements(requirement.readlines(), packages)
-    with open(requirement.name, 'w') as f:
+    # Run the uninstallation.
+    installed = finder.choose_installed(packages)
+    if not installed:
+        echoes.err("There is no uninstall possible package.")
+        sys.exit(2)
+
+    deletable_set = set(installed)
+    if auto:
+        for pkg in installed:
+            deletable = finder.get_deletable_dist_set(pkg)
+            deletable_set |= deletable
+        echoes.info(
+            "Specified package and becomes unnecessary by which they are removed, "
+            "it will remove the following packages:\n\n{}\n".format("\n".join(deletable_set))
+        )
+        click.confirm("Are you sure?", abort=True)
+
+    if pip.uninstall(deletable_set):
+        sys.exit(2)
+
+    content = re_edit(requirements_file.readlines(), packages)
+    with open(requirements_file.name, 'w') as f:
         f.write(content)
-    msg = "Remove the following packages from {requirement}: {packages}"
-    echoes.info(msg.format(requirement=requirement.name,
-                           packages=", ".join(uninstalled_packages)))
-    if quiet:
-        return
 
-    with open(requirement.name, 'r') as f:
-        echoes.info("{} has been updated as follows:".format(requirement.name))
-        echoes.success(f.read())
+    echoes.info("Remove the following packages from {requirement}: {packages}".format(
+        requirement=requirements_file.name, packages=", ".join(deletable_set)
+    ))
+
+    if not quiet:
+        echoes.info("{} has been updated as follows:".format(requirements_file.name))
+        echoes.success(content)

@@ -58,6 +58,3 @@ target/
 
 # Wheel
 wheelhouse/
-
-# Project Repository
-requirements.in
