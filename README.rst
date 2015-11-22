@@ -218,7 +218,7 @@ unnecessary.
     Are you sure? [y/N]:
 
 Aliases
-~~~~~~~
+-------
 
 snake-pit You can also use the alias of sub-command.
 
@@ -226,6 +226,11 @@ snake-pit You can also use the alias of sub-command.
 
     $ pit i django  # install django
     $ pit u django  # uninstall django
+
+License
+-------
+
+Licensed under the MIT, see ``LICENSE``.
 
 .. |CircleCI| image:: https://img.shields.io/circleci/project/kk6/snake-pit.svg?style=flat-square
    :target: https://circleci.com/gh/kk6/snake-pit
