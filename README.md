@@ -184,7 +184,7 @@ bpython
 Are you sure? [y/N]:
 ```
 
-### Aliases
+## Aliases
 
 snake-pit You can also use the alias of sub-command.
 
@@ -192,3 +192,7 @@ snake-pit You can also use the alias of sub-command.
 $ pit i django  # install django
 $ pit u django  # uninstall django
 ```
+
+## License
+
+Licensed under the MIT, see `LICENSE`.

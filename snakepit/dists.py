@@ -13,8 +13,9 @@ distlib.database.METADATA_FILENAME = 'metadata.json'
 
 class DistFinder(object):
 
-    def __init__(self):
+    def __init__(self, white_list=()):
         self.dist_path = distlib.database.DistributionPath()
+        self.white_list = white_list
 
     def get_installed_distributions(self):
         """Return installed distributions.
@@ -83,7 +84,7 @@ class DistFinder(object):
             cannot_delete_dists.extend(self.get_dependencies(non_required))
         deletable_dist_set = {d.key for d in uninstall_candidates} - {d.key for d in cannot_delete_dists}
         deletable_dist_set.add(name)
-        return deletable_dist_set
+        return deletable_dist_set.difference(self.white_list)
 
     def choose_installed(self, names):
         """Return a set of installed distributions.

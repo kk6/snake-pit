@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 
-def re_edit_requirements(lines, will_remove):
+def re_edit(lines, will_remove):
     """Re-Edit requirements file.
 
     :param lines: requirement.readlines()'s return value.
@@ -22,6 +22,4 @@ def re_edit_requirements(lines, will_remove):
         matched = pattern.match(line)
         if not matched or matched.group().lower() not in will_remove:
             re_editing.append(line)
-    if re_editing and re_editing[-1] != '\n':
-        re_editing.append('\n')
     return ''.join(re_editing)

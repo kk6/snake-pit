@@ -19,10 +19,11 @@ from .exceptions import (
     RequirementsKeyError,
 )
 from .groups import AliasedGroup
-from .utils import re_edit_requirements
+from .utils import re_edit
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 CONFIG_PATH = os.environ.get('PIT_CONFIG_PATH', 'pit.yml')
+WHITE_LIST = ('pip', 'setuptools', 'click', 'distlib', 'pyyaml')
 
 
 @click.group(cls=AliasedGroup, context_settings=CONTEXT_SETTINGS)
@@ -129,7 +130,7 @@ def uninstall(ctx, packages, requirement, quiet, name, auto):
         echoes.err(str(e))
         sys.exit(2)
 
-    finder = DistFinder()
+    finder = DistFinder(WHITE_LIST)
 
     # Warning packages that are not installed.
     not_installed = finder.choose_not_installed(packages)
@@ -142,6 +143,10 @@ def uninstall(ctx, packages, requirement, quiet, name, auto):
 
     # Run the uninstallation.
     installed = finder.choose_installed(packages)
+    if not installed:
+        echoes.err("There is no uninstall possible package.")
+        sys.exit(2)
+
     deletable_set = set(installed)
     if auto:
         for pkg in installed:
@@ -156,7 +161,7 @@ def uninstall(ctx, packages, requirement, quiet, name, auto):
     if pip.uninstall(deletable_set):
         sys.exit(2)
 
-    content = re_edit_requirements(requirements_file.readlines(), packages)
+    content = re_edit(requirements_file.readlines(), packages)
     with open(requirements_file.name, 'w') as f:
         f.write(content)
 

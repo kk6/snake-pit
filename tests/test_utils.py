@@ -9,7 +9,7 @@ from textwrap import dedent
 
 
 def test_re_edit_requirements():
-    from snakepit.utils import re_edit_requirements
+    from snakepit.utils import re_edit
     before = [
         "# requirements.in\n",
         "flask\n",
@@ -21,5 +21,5 @@ def test_re_edit_requirements():
         pytest
 
     """)
-    content = re_edit_requirements(before, ['flask'])
+    content = re_edit(before, ['flask'])
     assert content == after
