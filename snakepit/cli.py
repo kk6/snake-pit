@@ -52,8 +52,13 @@ def cli(ctx):
     Specify requirements file name.
     This option takes precedence over the '-r' option.
     """))
+@click.option(
+    '--pre', is_flag=True,
+    help=("Include pre-release and development versions. "
+          "By default, pip only finds stable versions.")
+)
 @click.pass_context
-def install(ctx, packages, requirement, quiet, name):
+def install(ctx, packages, requirement, quiet, name, pre):
     """Install packages and write requirements file.
 
     To append package names were installed in requirements file,
@@ -84,7 +89,10 @@ def install(ctx, packages, requirement, quiet, name):
         echoes.warn("There is no installable packages a new.")
         sys.exit(0)
 
-    raised = pip.install(installable_packages)
+    pip_options = []
+    if pre:
+        pip_options.append('--pre')
+    raised = pip.install(installable_packages, pip_options)
     if raised:
         sys.exit(2)
 

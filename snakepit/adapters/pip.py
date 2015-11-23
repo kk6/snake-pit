@@ -6,14 +6,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import pip
 
 
-def install(packages):
+def install(packages, options):
     """Execute `pip install`.
 
     :param packages: Package name list.
     :return: If `pip install` is successful, then return 0 else 1.
 
     """
-    return pip.main(["install"] + [pkg for pkg in packages])
+    return pip.main(["install"] + options + [pkg for pkg in packages])
 
 
 def uninstall(packages):
