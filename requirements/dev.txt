@@ -4,19 +4,19 @@
 #
 #    pip-compile dev.in
 #
-click==5.1                # via pip-tools
-coverage==4.0.2           # via pytest-cov
+click==7.0                # via pip-tools
+coverage==4.5.2           # via pytest-cov
 first==2.0.1              # via pip-tools
-pip-autoremove==0.9.0
-pip-tools==1.1.6
-pipdeptree==0.5.0
-pluggy==0.3.1             # via tox
-py==1.4.30                # via pytest, tox
-pytest-cov==2.2.0
-pytest==2.8.3
-six==1.10.0               # via pip-tools
-tox==2.2.1
-virtualenv==13.1.2        # via tox
+pip-autoremove==0.9.1
+pip-tools==3.2.0
+pipdeptree==0.13.1
+pluggy==0.8.1             # via tox
+py==1.7.0                # via pytest, tox
+pytest-cov==2.6.1
+pytest==4.1.1
+six==1.12.0               # via pip-tools
+tox==3.7.0
+virtualenv==16.2.0        # via tox
 
 # The following packages are commented out because they are
 # considered to be unsafe in a requirements file:
