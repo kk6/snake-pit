@@ -9,7 +9,7 @@ coverage==4.5.2           # via pytest-cov
 first==2.0.1              # via pip-tools
 pip-autoremove==0.9.1
 pip-tools==3.2.0
-pipdeptree==0.13.1
+pipdeptree==0.13.2
 pluggy==0.8.1             # via tox
 py==1.7.0                # via pytest, tox
 pytest-cov==2.6.1
